@@ -4,20 +4,21 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 int pmax;
 int rmax;
-int prores[3][3];
+pthread_t bankers[3][3];
 int local[3][3];
 int Avail[pmax];
-int MaxR[3][3]= {{8,8,8},{7,7,7},{10,10,10}};
+int Max_Resource[3][3]= {{8,8,8},{7,7,7},{10,10,10}};
 int Alloc[3][3]={{3,2,1},{1,1,1},{2,2,2}};
 int Need[3][3];
 int countp=0, countr=0;
 int threadp=3, threadm=3;
 
-void * count_add(void * re);
-void * count_stay(void * re);
+void * locate_function(void * re);
+void * check_function(void * re);
 
 pthread_mutex_t locking;
 	
@@ -25,44 +26,41 @@ pthread_mutex_t locking;
 
 int main()
 {
+	
+	pthread_mutex_init(&locking, NULL);	
+
 	printf("/n Enter the maximum number of Processes:  ");
 	scanf("%d\n",&pmax);
 	
 	printf("/n Enter the maximum number of Resources:  ");
 	scanf("%d\n",&rmax);
 
-	pthread_t prores[3][3];
 	int i,j;
 	int res1=3, res2=2, res3=2;
 	
-	if(pthread_mutex_init(&locking, NULL) < 0)
-	{
-		printf("\nError Occured.\n");
-		exit(0);
-	}
 	else
 	{
 		printf("\n Mutex Lock Initialized\n");
 	}
-		pthread_create(&prores[0][0], NULL, &count_stay, (void *)r1);
-		pthread_create(&prores[1][0], NULL, &count_add, (void *)r2);
-		pthread_create(&prores[2][0], NULL, &count_add, (void *)r3);
+		pthread_create(&bankers[0][0], NULL, &check_function, (void *)r1);
+		pthread_create(&bankers[1][0], NULL, &locate_function, (void *)r2);
+		pthread_create(&bankers[2][0], NULL, &locate_function, (void *)r3);
 
 		
-		for(i=0; i<thread1; i++)
+		for(i=0;i<threadp;i++)
 		{
-			for(j=0; j<thread2; j++)
+			for(j=0;j<threadm;j++)
 			{
-				pthread_join(prores[0][0], NULL);
-				pthread_join(prores[1][0], NULL);
-				pthread_join(prores[2][0], NULL);
+				pthread_join(bankers[0][0], NULL);
+				pthread_join(bankers[1][0], NULL);
+				pthread_join(bankers[2][0], NULL);
 				
 			}
 		}
 }
 
 
-void * count_stay(void * re)
+void * check_function(void * re)
 {
 	int t_no = (int) re;
 	int x,y;
@@ -73,12 +71,17 @@ void * count_stay(void * re)
 	{
 		pthread_mutex_lock(&locking);
 		Avail[x] = Max[x][y]-Alloc[countp++][countr++];
+		printf("\n Availabe is: %d\n",Avail[x]);
+		printf("check_function:\n thread : %d,\n Available : %d.\n Signalling done and Received.\n",t_no,Avail[y]);
+		countr++;
+		printf("check_function:\n thread : %d,\n New Need Now : %d.\n",t_no,Need[countp][countr]);
 	}
 	
+	pthread_mutex_unlock(&locking);
 }
 
 
-void * count_add(void * re)
+void * locate_function(void * re)
 {
 	
 }
