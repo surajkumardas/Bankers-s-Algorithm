@@ -1,4 +1,7 @@
 
+/*
+		Banker's Algorithm
+*/
 
 #include <pthread.h>
 #include <unistd.h>
@@ -6,11 +9,10 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-int pmax;
-int rmax;
+int pmax=10;
+int rmax=10;
 pthread_t bankers[3][3];
-int local[3][3];
-int Avail[pmax];
+int Avail[10];
 int Max_Resource[3][3]= {{8,8,8},{7,7,7},{10,10,10}};
 int Alloc[3][3]={{3,2,1},{1,1,1},{2,2,2}};
 int Need[3][3];
@@ -27,6 +29,8 @@ pthread_mutex_t locking;
 int main()
 {
 	
+	printf("\n Banker's Algorithm \n");	
+
 	pthread_mutex_init(&locking, NULL);	
 
 	printf("/n Enter the maximum number of Processes:  ");
@@ -34,6 +38,8 @@ int main()
 	
 	printf("/n Enter the maximum number of Resources:  ");
 	scanf("%d\n",&rmax);
+
+	Avail[rmax];
 
 	int i,j;
 	int res1=3, res2=2, res3=2;
@@ -83,7 +89,7 @@ void * check_function(void * re)
 
 void * locate_function(void * re)
 {
-	int a,b,x,y;
+	int x,y,i,j;
 	int t_no = (int) re;
 	
 	for(i=0;i<pmax;i++)
