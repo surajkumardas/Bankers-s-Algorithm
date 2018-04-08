@@ -83,6 +83,34 @@ void * check_function(void * re)
 
 void * locate_function(void * re)
 {
+	int a,b,x,y;
+	int t_no = (int) re;
+	
+	for(i=0;i<pmax;i++)
+	{
+		for(j=0;j<rmax;j++)
+		{
+			Need[x][y]=Max[x][y]-Alloc[i][j];
+			printf("\n Allocation : %d,\n Need : %d\n",Alloc[i][j],Need[x][y]);
+		}
+	
+		pthread_mutex_lock(&mutex);
+    
+		if(countp==pmax && countr==rmax)
+		{
+		       printf("\nlocate_function:\n thread %d,\n Need = %d.\n Limit Reached.\n",t_no,Need[x][y]);
+       		}
+
+    		pthread_mutex_unlock(&mutex);
+		printf("\n locate_function:\n thread %d,\n nNeed = %d.\n Locking Mutex Unlocked.\n",t_no,Need[x][y]);
+    		sleep(5);
+    		
+		printf("\n Going to Check Function...\n");
+		check_function(void * re);
+	}
+
+	printf("\n Going to Check Function...\n");
+	check_function(void * re);
 	
 }
 
